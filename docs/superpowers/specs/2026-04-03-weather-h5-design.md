@@ -17,12 +17,14 @@ A Next.js (App Router) based H5 application that provides a 7-day weather foreca
 ### 3.1 Frontend (H5 App)
 - **Geolocation**: Upon opening, requests browser `navigator.geolocation`. Converts coordinates to a QWeather `Location ID`. Fallback to manual city search.
 - **Dashboard**: Displays today's weather, any active official disaster warnings, and a 7-day temperature trend chart (using a lightweight charting library like Recharts).
-- **Subscription Management**: Users input their Server酱 `SendKey` to subscribe. The frontend calls an API to save `[UserID, SendKey, LocationId, CityName]` to Vercel KV.
+- **Subscription Management**: Users input their Server酱 `SendKey` to subscribe.
+  - **Identity**: A client-generated UUID stored in `localStorage` serves as the `UserID`.
+  - **Actions**: The frontend calls APIs to Upsert (create or update) and Delete (unsubscribe) the subscription record (`[UserID, SendKey, LocationId, CityName]`) in Vercel KV.
 
 ### 3.2 Backend & Storage (Vercel KV & APIs)
-- **KV Storage**: A Hash or List in Vercel KV storing subscriber profiles.
+- **KV Storage**: A Hash or List in Vercel KV storing subscriber profiles. It supports upsert and delete operations based on `UserID`.
 - **Manual Push / Target Control Interface**:
-  - An API endpoint (`/api/push/target`) reserved to push notifications to specific users manually. This allows granular control over pushing to specific individuals outside of the automated cron.
+  - An API endpoint (`/api/push/target`) reserved to push notifications to specific users manually. This allows granular control over pushing to specific individuals outside of the automated cron. This endpoint will be protected by an environment variable API key to prevent unauthorized access.
 
 ### 3.3 Cron Job Logic (The Notification Engine)
 - **Trigger**: Runs twice daily (e.g., 07:00 and 20:00) via Vercel Cron.
