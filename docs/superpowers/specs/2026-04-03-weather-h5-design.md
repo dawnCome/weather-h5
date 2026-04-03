@@ -1,41 +1,41 @@
-# Weather H5 App Design Specification
+# 天气 H5 应用设计规范
 
-## 1. Project Context
-A Next.js (App Router) based H5 application that provides a 7-day weather forecast and sends proactive WeChat notifications for extreme weather changes (sudden temperature drops, storms, etc.). It targets individual developers and small groups, utilizing Server酱 for WeChat notifications and QWeather (和风天气) for weather data.
+## 1. 项目背景
+本项目是一个基于 Next.js (App Router) 构建的 H5 网页应用，旨在为用户提供未来 7 天的天气预报，并在发生极端天气变化（如温度骤变、暴雨等）前，主动通过微信发送预警通知。该工具主要面向个人开发者和小规模用户群体，采用“Server酱”作为微信通知渠道，并使用“和风天气”作为天气数据源。
 
-## 2. Architecture & Tech Stack
-- **Framework**: Next.js (App Router) with React.
-- **Styling**: Tailwind CSS for responsive mobile-first UI.
-- **Data Storage**: Vercel KV (Redis) to store multi-user subscription data.
-- **Deployment & Cron**: Vercel Serverless Functions + Vercel Cron Jobs.
-- **APIs**:
-  - Weather Data: QWeather (和风天气) API.
-  - Notifications: Server酱 (Turbo version).
+## 2. 架构与技术栈选型
+- **前端框架**: Next.js (App Router) + React。
+- **页面样式**: Tailwind CSS，用于快速构建移动端优先的现代响应式界面。
+- **数据存储**: Vercel KV (Redis)，用于存储多用户的订阅数据。
+- **部署与定时任务**: Vercel Serverless Functions（无服务器函数） + Vercel Cron Jobs（定时任务）。
+- **第三方 API**:
+  - 天气数据: 和风天气 (QWeather) API。
+  - 消息推送: Server酱 (Turbo 版)。
 
-## 3. Data Flow & Core Logic
+## 3. 数据流与核心逻辑
 
-### 3.1 Frontend (H5 App)
-- **Geolocation**: Upon opening, requests browser `navigator.geolocation`. Converts coordinates to a QWeather `Location ID`. Fallback to manual city search.
-- **Dashboard**: Displays today's weather, any active official disaster warnings, and a 7-day temperature trend chart (using a lightweight charting library like Recharts).
-- **Subscription Management**: Users input their Server酱 `SendKey` to subscribe.
-  - **Identity**: A client-generated UUID stored in `localStorage` serves as the `UserID`.
-  - **Actions**: The frontend calls APIs to Upsert (create or update) and Delete (unsubscribe) the subscription record (`[UserID, SendKey, LocationId, CityName]`) in Vercel KV.
+### 3.1 前端应用 (H5 页面)
+- **自动定位**: 用户打开页面时，浏览器会请求 `navigator.geolocation` 定位权限。获取经纬度后，调用和风天气 API 转换为对应的 `Location ID`（城市 ID）。若定位失败或被拒绝，则提供手动的城市搜索框。
+- **数据看板**: 展示今日实时天气、当前生效的气象灾害预警，以及未来 7 天的温度趋势图（采用 Recharts 或 ECharts 等轻量级图表库绘制）。
+- **订阅管理**: 用户输入其 Server酱的 `SendKey` 完成订阅配置。
+  - **用户标识**: 客户端随机生成一个 UUID 存入 `localStorage` 作为用户的唯一标识（`UserID`）。
+  - **数据操作**: 前端通过调用后端 API，在 Vercel KV 中新增、更新（Upsert）或取消订阅（Delete），存储结构为 `[UserID, SendKey, LocationId, CityName]`。
 
-### 3.2 Backend & Storage (Vercel KV & APIs)
-- **KV Storage**: A Hash or List in Vercel KV storing subscriber profiles. It supports upsert and delete operations based on `UserID`.
-- **Manual Push / Target Control Interface**:
-  - An API endpoint (`/api/push/target`) reserved to push notifications to specific users manually. This allows granular control over pushing to specific individuals outside of the automated cron. This endpoint will be protected by an environment variable API key to prevent unauthorized access.
+### 3.2 后端服务与存储 (Vercel KV & API)
+- **KV 数据存储**: 在 Vercel KV 中使用 Hash 或 List 结构存储所有订阅用户的资料，支持基于 `UserID` 的更新和删除操作。
+- **定向推送与手动触发接口**:
+  - 预留一个专用的 API 接口（`/api/push/target`），允许系统或管理员在自动定时任务之外，针对特定用户进行手动推送。该接口将通过环境变量中的 API Key 密钥进行鉴权保护，防止未经授权的调用。
 
-### 3.3 Cron Job Logic (The Notification Engine)
-- **Trigger**: Runs twice daily (e.g., 07:00 and 20:00) via Vercel Cron.
-- **Execution Steps**:
-  1. Fetch all subscribers from Vercel KV.
-  2. Group subscribers by `LocationId` to minimize redundant QWeather API calls.
-  3. For each location, fetch weather data and disaster warnings.
-  4. Evaluate conditions:
-     - **Disaster Warning**: Any active official alerts (e.g., Yellow rainstorm).
-     - **Sudden Change**: Tomorrow's high/low temperature drops by 8°C or more compared to today's, or clear skies transition to heavy rain/snow.
-  5. If conditions are met, iterate through affected subscribers and dispatch HTTP POST requests to Server酱 using their `SendKey`.
+### 3.3 定时任务逻辑 (消息推送引擎)
+- **触发机制**: 依靠 Vercel Cron 每天定时触发两次（例如每天 07:00 和 20:00）。
+- **执行流程**:
+  1. 从 Vercel KV 数据库拉取所有已订阅用户的列表。
+  2. 根据 `LocationId`（城市 ID）对用户进行分组，以最大程度减少对和风天气 API 的重复请求，节省接口额度。
+  3. 遍历分组后的城市，获取对应的天气预报和气象灾害预警数据。
+  4. 触发条件判断：
+     - **气象预警**: 官方发布了生效中的灾害预警（如暴雨黄色预警等）。
+     - **天气骤变**: 对证明日与今日气温，若最高温或最低温下降幅度达到或超过 8°C；或天气状况由晴好突然转为大雨/暴雪。
+  5. 若满足上述任意触发条件，遍历该城市下的所有受影响用户，使用对应的 `SendKey` 向 Server酱 发起 HTTP POST 请求，将提醒推送到用户微信。
 
-## 4. Development Directory
-All development must occur within the `weather-h5` directory in the current workspace.
+## 4. 开发目录约束
+所有的代码开发和文件创建操作，必须且只能在当前工作区的 `weather-h5` 目录下进行。
