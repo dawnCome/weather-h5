@@ -31,25 +31,42 @@
 ### 3.1 前端组件 (Frontend Components)
 - **容器组件**: `src/app/page.tsx` 作为主入口，管理全局加载状态和天气数据。
 - **UI 组件**:
-  - `components/features/weather/WeatherCard.tsx`: 实时天气卡片。
-  - `components/features/weather/TrendChart.tsx`: 基于 `recharts` 的趋势图组件。
+  - `components/features/weather/WeatherCard.tsx`: 实时天气卡片，使用 Tailwind v4 适配。
+  - `components/features/weather/TrendChart.tsx`: 基于 `recharts` 的趋势图组件，需标记 `"use client"`。
   - `components/ui/Alert.tsx`: 通用的预警/提示组件。
 
 ### 3.2 后端 API (Backend API)
 - **新增接口**: `GET /api/weather?location=lon,lat` 或 `GET /api/weather?locationId=ID`。
-- **逻辑流程**:
-  1. 调用和风天气 7 天预报接口 (`/weather/7d`)。
-  2. 同时调用和风天气实时预警接口 (`/warning/now`)。
-  3. 合并数据并返回给前端。
+- **数据结构 (TypeScript)**:
+  ```typescript
+  interface DailyWeather {
+    fxDate: string;
+    tempMax: string;
+    tempMin: string;
+    textDay: string;
+    iconDay: string;
+  }
+  interface WeatherWarning {
+    title: string;
+    type: string;
+    level: string;
+  }
+  interface WeatherResponse {
+    city: string;
+    daily: DailyWeather[];
+    warning: WeatherWarning[];
+    updateTime: string;
+  }
+  ```
 
 ### 3.3 状态管理 (State Management)
-- 使用 `useState` 和 `useEffect` 处理异步数据流。
-- 考虑到应用规模较小，暂不引入复杂的全局状态管理库，直接在页面级处理。
+- **Zustand Store**: 使用 `src/stores/weatherStore.ts` 管理当前天气数据、加载状态和定位信息。
+  - 遵循 `CLAUDE.md` 规范，避免在页面组件中过度使用 `useState`。
 
 ## 4. 异常与性能处理
-- **加载状态**: 使用简单的加载动画（Spinner）或骨架屏。
-- **错误处理**: 若 API 调用失败，显示友好的错误提示，并允许用户重试。
-- **限流处理**: 对地理位置解析和天气请求进行简单的防抖/节流，避免高频调用 API。
+- **加载状态**: 优先使用 **骨架屏 (Skeleton Screens)** 替代简单的 Spinner。
+- **响应式适配**: 严格禁止硬编码 `px`，所有布局尺寸应使用 `vw`/`vh` 或 Tailwind 工具类。
+- **错误处理**: 若 API 调用失败，使用 `components/ui/Alert.tsx` 显示友好提示。
 
 ## 5. 测试要求
 - **单元测试**:
