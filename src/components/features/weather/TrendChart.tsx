@@ -3,12 +3,16 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { DailyWeather } from '@/types/qweather';
 
-export default function TrendChart({ data }: { data: DailyWeather[] }) {
-  const chartData = data.map(item => ({
+export const transformChartData = (data: DailyWeather[]) => {
+  return data.map(item => ({
     date: item.fxDate.split('-').slice(1).join('/'),
     max: parseInt(item.tempMax),
     min: parseInt(item.tempMin),
   }));
+};
+
+export default function TrendChart({ data }: { data: DailyWeather[] }) {
+  const chartData = transformChartData(data);
 
   return (
     <div className="w-full h-[25vh] mt-4">
