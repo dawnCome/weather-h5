@@ -1,8 +1,12 @@
 'use client';
 
-export function Skeleton({ className }: { className: string }) {
+export function Skeleton({ className = '' }: { className?: string }) {
   return (
-    <div className={`animate-pulse bg-slate-200 rounded-xl ${className}`} />
+    <div
+      className={`animate-pulse bg-slate-200 rounded-xl ${className}`}
+      aria-busy="true"
+      aria-label="加载中"
+    />
   );
 }
 
