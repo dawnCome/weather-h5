@@ -5,7 +5,7 @@ import Home from './page'
 describe('Home Page', () => {
   it('renders correctly', () => {
     render(<Home />)
-    expect(screen.getByText(/和风天气 H5/i)).toBeInTheDocument()
-    expect(screen.getByText(/开发起点/i)).toBeInTheDocument()
+    expect(screen.getByText(/气象异动预警/i)).toBeInTheDocument()
+    expect(screen.getByText(/开启\/更新预警/i)).toBeInTheDocument()
   })
 })
