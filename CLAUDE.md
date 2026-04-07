@@ -1,6 +1,6 @@
 # Next.js H5 开发规范
 
-> 技术栈：Next.js 15 · TypeScript · Tailwind CSS · Zustand · viewport 适配
+> 技术栈：Next.js 16 · TypeScript · Tailwind CSS · Zustand · viewport 适配
 
 所有代码生成、修改、重构均须遵循本规范。子规范见 `docs/` 目录。
 
@@ -10,7 +10,7 @@
 
 | 层级 | 方案                                    |
 | ---- | --------------------------------------- |
-| 框架 | Next.js 15 App Router                   |
+| 框架 | Next.js 16 App Router                   |
 | 语言 | TypeScript（strict 模式）               |
 | 样式 | Tailwind CSS v4                         |
 | 状态 | Zustand                                 |

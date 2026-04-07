@@ -6,8 +6,18 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    environment: 'happy-dom',
+    setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      exclude: [
+        'node_modules/**',
+        'src/types/**',
+        'src/test/**',
+        '**/*.d.ts',
+      ],
+      thresholds: { lines: 80, branches: 75 },
+    },
     alias: {
       '@': path.resolve(__dirname, './src')
     }
