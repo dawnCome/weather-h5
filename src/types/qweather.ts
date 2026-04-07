@@ -79,3 +79,10 @@ export interface CityInfo {
   id: string;
   name: string;
 }
+
+export interface WeatherResponse {
+  city: string;
+  daily: DailyWeather[];
+  warning: WeatherWarning[];
+  updateTime: string;
+}
