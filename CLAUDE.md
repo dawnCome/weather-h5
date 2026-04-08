@@ -1,6 +1,6 @@
 # Next.js H5 开发规范
 
-> 技术栈：Next.js 15 · TypeScript · Tailwind CSS · Zustand · viewport 适配
+> 技术栈：Next.js 16 · TypeScript · Tailwind CSS · Zustand · viewport 适配
 
 所有代码生成、修改、重构均须遵循本规范。子规范见 `docs/` 目录。
 
@@ -10,13 +10,14 @@
 
 | 层级 | 方案                                    |
 | ---- | --------------------------------------- |
-| 框架 | Next.js 15 App Router                   |
+| 框架 | Next.js 16 App Router                   |
 | 语言 | TypeScript（strict 模式）               |
 | 样式 | Tailwind CSS v4                         |
 | 状态 | Zustand                                 |
 | 请求 | fetch + Server Actions / Route Handlers |
 | 测试 | Vitest + @testing-library/react         |
 | 适配 | viewport vw/vh                          |
+| 管理 | pnpm                                    |
 
 ---
 
@@ -39,6 +40,7 @@
 ❌ 禁止裸调 fetch，不处理 loading / error 状态
 ❌ 禁止硬编码 px 尺寸做移动端适配（用 vw 或 Tailwind 工具类）
 ❌ 禁止生成无对应测试的新组件（UI 基础组件除外）
+❌ 禁止使用 npm 或 yarn，统一使用 pnpm
 ```
 
 ---

@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p docs)",
+      "Bash(mv component.md data.md h5.md routing.md testing.md docs/)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npx:*)",
+      "Bash(mkdir -p ../temp-docs)",
+      "Bash(mv CLAUDE.md docs ../temp-docs/)",
+      "Bash(mv ../temp-docs/CLAUDE.md ../temp-docs/docs .)",
+      "Bash(rmdir ../temp-docs)",
+      "Bash(pnpm:*)",
+      "Bash(npm test:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(mkdir temp-init:*)",
+      "Bash(mv CLAUDE.md docs .gitignore temp-init/)",
+      "Bash(mv temp-init/CLAUDE.md temp-init/docs .)",
+      "Bash(rm -rf temp-init)",
+      "Bash(mkdir -p D:/small-tool/weather-h5/temp-init)",
+      "Bash(mv .worktrees/weather-h5/CLAUDE.md .worktrees/weather-h5/docs .worktrees/weather-h5/.gitignore D:/small-tool/weather-h5/temp-init/)",
+      "Bash(mv D:/small-tool/weather-h5/temp-init/CLAUDE.md D:/small-tool/weather-h5/temp-init/docs D:/small-tool/weather-h5/temp-init/.gitignore .)",
+      "Bash(rm -rf D:/small-tool/weather-h5/temp-init)",
+      "Bash(git worktree:*)",
+      "Bash(env)",
+      "Bash(find /d/small-tool/weather-h5 -type f -name *.ts -o -name *.tsx)",
+      "Bash(cd:*)",
+      "Bash(find src:*)",
+      "Bash(git *)",
+      "Bash(pnpm:vitest run:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh api:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''required_approving_review_count: {d[\"\"required_pull_request_reviews\"\"][\"\"required_approving_review_count\"\"]}''''\\); print\\(f''''enforce_admins: {d[\"\"enforce_admins\"\"][\"\"enabled\"\"]}''''\\); print\\(f''''dismiss_stale_reviews: {d[\"\"required_pull_request_reviews\"\"][\"\"dismiss_stale_reviews\"\"]}''''\\)\")"
+    ]
+  }
+}
